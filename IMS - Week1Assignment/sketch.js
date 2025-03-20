@@ -84,6 +84,7 @@ function draw() {
   //     break;
   // }
 
+  // adds in colors and maps them to the grid to create a rainbow gradient
   let r = x * spacing;
   let g = y * spacing;
   // let b = random(100, 200);
