@@ -1,17 +1,10 @@
 // Prisha's Comments and Edits
+// Added colors and more randomness with types of shapes using switch case
 
-// Dan Shiffman's Notes
+// Dan Shiffman's Code
 // Self Avoiding Walk (Random Walk with Alpha)
 // The Coding Train / Daniel Shiffman
-// https://thecodingtrain.com/CodingChallenges/162-self-avoiding-walk.html
-// https://youtu.be/
-
-// Basic: https://editor.p5js.org/codingtrain/sketches/2_4gyDD_9
-// With Backtracking: https://editor.p5js.org/codingtrain/sketches/dRWS3A9nq
-// 3D: https://editor.p5js.org/codingtrain/sketches/D0ONOlCDT
-// With Bezier: https://editor.p5js.org/codingtrain/sketches/KFbX0NWgh
-// With Recursion: https://editor.p5js.org/codingtrain/sketches/UPxBk1YiB
-// Random Walk with Alpha: https://editor.p5js.org/codingtrain/sketches/IEw2RkDnJ
+// https://editor.p5js.org/codingtrain/sketches/IEw2RkDnJ
 
 let x;
 let y;
@@ -46,10 +39,33 @@ function draw() {
   // stroke(255, 100);
 
   // makes the size of the points being drawn responsive to the size of the grid
-  strokeWeight(spacing * 0.5);
-  point(x * spacing, y * spacing);
+  // strokeWeight(spacing * 0.5);
+  noFill();
 
+
+  const shape = floor(random(3));
+  switch (shape) {
+    case 0:
+      noFill();
+      rect(x * spacing, y * spacing, spacing * 0.5);
+      break;
+    case 1:
+      strokeWeight(spacing);
+      point(x * spacing, y * spacing);
+      break;
+    case 2:
+      strokeWeight(1); 
+      triangle(x * spacing, y * spacing, (x + (spacing * 0.5)) * spacing, y * spacing, (x + (spacing * 0.25)) * spacing,  (y + (spacing * 0.25)) * spacing);
+      break;
+  }
+
+  // something i tried that i didn't use
+  // rect(x * spacing, y * spacing, spacing * 0.5);
+
+  // SHIFFMAN CODE:
   // this part is what makes it generative
+  // strokeWeight(spacing * 0.5);
+  // point(x * spacing, y * spacing);
   // const r = floor(random(4));
 
   // create cases for each random pattern chosen in the draw loop
@@ -67,10 +83,15 @@ function draw() {
   //     y = y - 1;
   //     break;
   // }
+
   let r = x * spacing;
   let g = y * spacing;
+  // let b = random(100, 200);
   let b = 200;
-  stroke(r, g, b, 100);
+  let a = 100;
+  stroke(r, g, b, a);
+  // fill(r, g, b, a);
+
   const pattern = floor(random(4));
   switch (pattern) {
     case 0:
@@ -91,3 +112,23 @@ function draw() {
       break;
   }
 }
+
+// use the shapes we defined in draw to custom draw on the canvas
+
+// function mouseDragged() {
+//   const userShape = floor(random(3));
+//   switch (userShape) {
+//     case 0:
+//       rectMode(CENTER);
+//       rect(mouseX, mouseY, spacing * 0.5);
+//       break;
+//     case 1:
+//       strokeWeight(spacing);
+//       point(mouseX, mouseY);
+//       break;
+//     case 2:
+//       strokeWeight(1); 
+//       triangle(mouseX, mouseY, (mouseX + (spacing * 0.5)), mouseY, (mouseX + (spacing * 0.25)),  (mouseY + (spacing * 0.25)));
+//       break;
+// }
+// }
