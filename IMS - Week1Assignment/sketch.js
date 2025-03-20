@@ -47,7 +47,7 @@ function draw() {
   switch (shape) {
     case 0:
       noFill();
-      rect(x * spacing, y * spacing, spacing * 0.5);
+      rect(x * spacing, y * spacing, spacing);
       break;
     case 1:
       strokeWeight(spacing);
@@ -97,19 +97,19 @@ function draw() {
   switch (pattern) {
     case 0:
       blendMode(HARD_LIGHT);
-      x = x + 1;
+      x = x + 2;
       break;
     case 1:
       blendMode(ADD);
-      x = x - 1;
+      x = x - 2;
       break;
     case 2:
       blendMode(EXCLUSION);
-      y = y + 1;
+      y = y + 2;
       break;
     case 3:
-      blendMode(LIGHTEST);
-      y = y - 1;
+      blendMode(SCREEN);
+      y = y - 2;
       break;
   }
 }
