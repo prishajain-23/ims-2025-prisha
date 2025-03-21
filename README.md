@@ -1,4 +1,4 @@
 # ims-2025-prisha
 Everything I'm doing for John Henry's Interactive Multi-Screen Experiences course @ NYU ITP
 
-[Generative Walk](IMS - Week1Assignment)
+[Worley Noise](Worley_Noise_Prisha)
