@@ -1,7 +1,7 @@
 // ----- URL Parameter Parsing -----
 // Default values for spacing and step
 let spacing = 5;
-let step = 10;
+let step = 5;
 
 // Use URLSearchParams to grab parameters from the current URL
 const urlParams = new URLSearchParams(window.location.search);
@@ -18,7 +18,7 @@ if (urlParams.has("step")) {
   }
 }
 
-// ----- Global Variables for Generative Code -----
+// ----- Global Variables for Generative Walk -----
 let x;
 let y;
 let grid;
@@ -152,8 +152,8 @@ function draw() {
 
   // --- Map Nose Position to Grid Coordinates ---
   // Map the nose's position from the video dimensions to your grid coordinates.
-  let mappedNoseX = map(currentNose.x, 0, video.width, cols, 0);
-  let mappedNoseY = map(currentNose.y, 0, video.height, rows, 0);
+  let mappedNoseX = map(currentNose.x, video.width, 0, 0, cols);
+  let mappedNoseY = map(currentNose.y, 0, video.height, 0, rows);
 
   // Create a vector representing the "attraction" from the current walk position (x, y) to the mapped nose.
   let noseForce = createVector(mappedNoseX - x, mappedNoseY - y);
