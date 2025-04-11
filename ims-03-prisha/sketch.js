@@ -90,7 +90,7 @@ function draw() {
     }
 
     if (kpArray) {
-      console.log("Available keypoints:", kpArray);
+      // console.log("Available keypoints:", kpArray);
 
       // Use the "name" property to find the nose keypoint.
       let noseKeypoint = kpArray.find(
@@ -100,18 +100,19 @@ function draw() {
       if (noseKeypoint) {
         // Accept any detection regardless of confidence for debugging.
         currentNose = createVector(noseKeypoint.x, noseKeypoint.y);
-        console.log(
-          "Nose detected at:",
-          noseKeypoint.x,
-          noseKeypoint.y,
-          "with confidence:",
-          noseKeypoint.confidence
-        );
-      } else {
-        console.log("No nose keypoint found in keypoints array.");
+        // console.log(
+        //   "Nose detected at:",
+        //   noseKeypoint.x,
+        //   noseKeypoint.y,
+        //   "with confidence:",
+        //   noseKeypoint.confidence
+        // );
       }
-    } else {
-      console.log("No keypoints array found in pose object.");
+    //   } else {
+    //     console.log("No nose keypoint found in keypoints array.");
+    //   }
+    // } else {
+    //   console.log("No keypoints array found in pose object.");
     }
   }
 
