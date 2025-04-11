@@ -1,7 +1,10 @@
+// GitHub Page link:
+// https://prishajain-23.github.io/ims-2025-prisha/ims-03-prisha/index.html
+
 // ----- URL Parameter Parsing -----
 // Default values for spacing and step
 let spacing = 5;
-let step = 5;
+let step = 2;
 
 // Use URLSearchParams to grab parameters from the current URL
 const urlParams = new URLSearchParams(window.location.search);
@@ -18,7 +21,7 @@ if (urlParams.has("step")) {
   }
 }
 
-// ----- Global Variables for Generative Walk -----
+// ----- Global Variables for Generative Code -----
 let x;
 let y;
 let grid;
@@ -30,6 +33,9 @@ let video;
 let bodyPose;
 let poses = [];
 let prevNose; // We'll store the previous nose position here
+
+// New global variable to track the last detected number of poses
+let lastPoseCount = 0;
 
 // ----- Preload: Load the bodyPose model -----
 function preload() {
@@ -84,136 +90,86 @@ function draw() {
     if (poses[0].keypoints) {
       kpArray = poses[0].keypoints;
     }
-    // Or if nested under a 'pose' property (if needed):
+    // Or if nested under a 'pose' property:
     else if (poses[0].pose && poses[0].pose.keypoints) {
       kpArray = poses[0].pose.keypoints;
     }
 
     if (kpArray) {
-      // console.log("Available keypoints:", kpArray);
-
-      // Use the "name" property to find the nose keypoint.
+      // Find the nose keypoint using its name
       let noseKeypoint = kpArray.find(
         (k) => k.name && k.name.toLowerCase() === "nose"
       );
 
       if (noseKeypoint) {
-        // Accept any detection regardless of confidence for debugging.
+        // Accept any detection regardless of confidence for now.
         currentNose = createVector(noseKeypoint.x, noseKeypoint.y);
-        // console.log(
-        //   "Nose detected at:",
-        //   noseKeypoint.x,
-        //   noseKeypoint.y,
-        //   "with confidence:",
-        //   noseKeypoint.confidence
-        // );
       }
-    //   } else {
-    //     console.log("No nose keypoint found in keypoints array.");
-    //   }
-    // } else {
-    //   console.log("No keypoints array found in pose object.");
     }
+
+    // --- Compute Movement Delta (if desired) ---
+    let noseDelta = createVector(0, 0);
+    if (prevNose) {
+      noseDelta = p5.Vector.sub(currentNose, prevNose);
+    }
+    prevNose = currentNose.copy();
+
+    // --- Generative Drawing ---
+    noFill();
+    let hueValue = map(x * spacing, 0, width, 0, 360);
+    let brightnessValue = map(y * spacing, 0, height, 50, 100);
+    stroke(hueValue, 100, brightnessValue, 80);
+
+    const shape = floor(random(3));
+    switch (shape) {
+      case 0:
+        rect(x * spacing, y * spacing, spacing);
+        break;
+      case 1:
+        strokeWeight(spacing);
+        point(x * spacing, y * spacing);
+        break;
+      case 2:
+        strokeWeight(1);
+        triangle(
+          x * spacing,
+          y * spacing,
+          (x + spacing * 0.5) * spacing,
+          y * spacing,
+          (x + spacing * 0.25) * spacing,
+          (y + spacing * 0.25) * spacing
+        );
+        break;
+    }
+
+    // --- Map Nose Position to Grid Coordinates ---
+    let mappedNoseX = map(currentNose.x, 0, video.width, cols, 0);
+    let mappedNoseY = map(currentNose.y, 0, video.height, 0, rows);
+    let noseForce = createVector(mappedNoseX - x, mappedNoseY - y);
+
+    // --- Compute a Random Delta ---
+    let randomDelta = createVector(0, 0);
+    let pattern = floor(random(4));
+    switch (pattern) {
+      case 0:
+        randomDelta.x = step;
+        break;
+      case 1:
+        randomDelta.x = -step;
+        break;
+      case 2:
+        randomDelta.y = step;
+        break;
+      case 3:
+        randomDelta.y = -step;
+        break;
+    }
+
+    // --- Update the Walk Position ---
+    let influenceFactor = 0.5; // Adjust to change the strength of the nose attraction.
+    x += randomDelta.x + noseForce.x * influenceFactor;
+    y += randomDelta.y + noseForce.y * influenceFactor;
   }
-
-  // --- Compute Movement Delta ---
-  let noseDelta = createVector(0, 0);
-  if (prevNose) {
-    noseDelta = p5.Vector.sub(currentNose, prevNose);
-  }
-  prevNose = currentNose.copy();
-
-  // --- Generative Drawing ---
-  noFill();
-  let hueValue = map(x * spacing, 0, width, 0, 360);
-  let brightnessValue = map(y * spacing, 0, height, 50, 100);
-  stroke(hueValue, 100, brightnessValue, 80);
-
-  const shape = floor(random(3));
-  switch (shape) {
-    case 0:
-      rect(x * spacing, y * spacing, spacing);
-      break;
-    case 1:
-      strokeWeight(spacing);
-      point(x * spacing, y * spacing);
-      break;
-    case 2:
-      strokeWeight(1);
-      triangle(
-        x * spacing,
-        y * spacing,
-        (x + spacing * 0.5) * spacing,
-        y * spacing,
-        (x + spacing * 0.25) * spacing,
-        (y + spacing * 0.25) * spacing
-      );
-      break;
-  }
-
-  // --- Map Nose Position to Grid Coordinates ---
-  // Map the nose's position from the video dimensions to your grid coordinates.
-  let mappedNoseX = map(currentNose.x, video.width, 0, 0, cols);
-  let mappedNoseY = map(currentNose.y, 0, video.height, 0, rows);
-
-  // Create a vector representing the "attraction" from the current walk position (x, y) to the mapped nose.
-  let noseForce = createVector(mappedNoseX - x, mappedNoseY - y);
-
-  // --- Compute a Random Delta ---
-  // This keeps some unpredictability in the movement.
-  let randomDelta = createVector(0, 0);
-  let pattern = floor(random(4));
-  switch (pattern) {
-    case 0:
-      randomDelta.x = step;
-      break;
-    case 1:
-      randomDelta.x = -step;
-      break;
-    case 2:
-      randomDelta.y = step;
-      break;
-    case 3:
-      randomDelta.y = -step;
-      break;
-  }
-
-  // --- Update the Walk Position ---
-  // Combine the random movement with the "attraction" force toward the nose.
-  let influenceFactor = 0.5; // Adjust this value to strengthen or lessen the attraction effect.
-  x += randomDelta.x + noseForce.x * influenceFactor;
-  y += randomDelta.y + noseForce.y * influenceFactor;
-
-  // // old method for walk
-  //   const pattern = floor(random(4));
-  //   switch (pattern) {
-  //     case 0:
-  //       blendMode(HARD_LIGHT);
-  //       x = x + step + noseDelta.x * influenceFactor;
-  //       break;
-  //     case 1:
-  //       blendMode(ADD);
-  //       x = x - step - noseDelta.x * influenceFactor;
-  //       break;
-  //     case 2:
-  //       blendMode(EXCLUSION);
-  //       y = y + step + noseDelta.y * influenceFactor;
-  //       break;
-  //     case 3:
-  //       blendMode(SCREEN);
-  //       y = y - step - noseDelta.y * influenceFactor;
-  //       break;
-  //   }
-
-  // // --- Optional: Draw the Webcam Preview and Nose Marker ---
-  // image(video, width - 160, height - 120, 160, 120);
-  // fill(0, 255, 0);
-  // noStroke();
-  // if (currentNose.x !== 0 || currentNose.y !== 0) {
-  //   let mappedX = map(currentNose.x, 0, video.width, width - 160, width);
-  //   let mappedY = map(currentNose.y, 0, video.height, height - 120, height);
-  //   circle(mappedX, mappedY, 10);
-  // }
 }
 
 // ----- Utility: Create a 2D Array -----
@@ -264,7 +220,32 @@ function windowResized() {
   grid = make2DArray(cols, rows);
 }
 
+// ----- Refresh the Sketch State -----
+// This function resets the canvas and walker state.
+function refreshSketch() {
+  // Clear the canvas
+  background(0);
+  // Reset grid and walker position
+  cols = floor(width / spacing);
+  rows = floor(height / spacing);
+  x = cols / 2;
+  y = rows / 2;
+  grid = make2DArray(cols, rows);
+  // Reset the timer if needed
+  my.startTime = millis() / 1000.0;
+  console.log("New person detected - sketch refreshed!");
+}
+
 // ----- Pose Detection Callback -----
 function gotPoses(results) {
+  // Check if a new person is detected by comparing the number of detected poses.
+  let currentPoseCount = results.length;
+  if (currentPoseCount > lastPoseCount) {
+    // A new person has been added
+    refreshSketch();
+  }
+  lastPoseCount = currentPoseCount;
+  
+  // Update the global poses array
   poses = results;
 }
